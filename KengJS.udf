@@ -1,6 +1,37 @@
-<UserData>
-  <OpenedDocuments>
-    <FilePathData Path="MainScene.csd" />
-  </OpenedDocuments>
-  <ActiveDocument Path="MainScene.csd" />
+<UserData Version="3.10.0.0">
+  <Properties>
+    <Item Key="PackageParamsKey">
+      <Value ctype="PackageParams">
+        <LuaIsEncrypt Value="False" />
+        <LuaEncryptKey Value="" />
+        <LuaEncryptSign Value="" />
+        <Android_PackageName Value="org.cocos.KengJS" />
+        <AndroidkeyStore Value="" />
+        <AndroidVersion Value="" />
+        <iOS_Target Value="KengJS-mobile" />
+        <iOS_BundleID Value="" />
+        <Platform Value="None" />
+        <RunPlatform Value="Mac" />
+        <FrameworkVersion Value="cocos2d-x-3.10" />
+        <IsDebugKeystore Value="True" />
+        <EnableSourceMap Value="False" />
+        <EnableHTML5Advanced Value="False" />
+      </Value>
+    </Item>
+    <Item Key="CocosRecentOperation">
+      <Value ctype="CocosRecentOperation">
+        <LastPublishType Value="Resource" />
+        <IsLastPublish Value="True" />
+        <LastRunType Value="Mac" />
+      </Value>
+    </Item>
+    <Item Key="TabsParamsKey">
+      <Value ctype="TabsInfo">
+        <OpenedDocuments>
+          <FilePathData Path="StartGameScene.csd" />
+        </OpenedDocuments>
+        <ActiveDocument Path="StartGameScene.csd" />
+      </Value>
+    </Item>
+  </Properties>
 </UserData>
