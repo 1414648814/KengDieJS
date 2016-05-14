@@ -1,75 +1,221 @@
-/**
- * A brief explanation for "project.json":
- * Here is the content of project.json file, this is the global configuration for your game, you can modify it to customize some behavior.
- * The detail of each field is under it.
- {
-    "project_type": "javascript",
-    // "project_type" indicate the program language of your project, you can ignore this field
-
-    "debugMode"     : 1,
-    // "debugMode" possible values :
-    //      0 - No message will be printed.
-    //      1 - cc.error, cc.assert, cc.warn, cc.log will print in console.
-    //      2 - cc.error, cc.assert, cc.warn will print in console.
-    //      3 - cc.error, cc.assert will print in console.
-    //      4 - cc.error, cc.assert, cc.warn, cc.log will print on canvas, available only on web.
-    //      5 - cc.error, cc.assert, cc.warn will print on canvas, available only on web.
-    //      6 - cc.error, cc.assert will print on canvas, available only on web.
-
-    "showFPS"       : true,
-    // Left bottom corner fps information will show when "showFPS" equals true, otherwise it will be hide.
-
-    "frameRate"     : 60,
-    // "frameRate" set the wanted frame rate for your game, but the real fps depends on your game implementation and the running environment.
-
-    "noCache"       : false,
-    // "noCache" set whether your resources will be loaded with a timestamp suffix in the url.
-    // In this way, your resources will be force updated even if the browser holds a cache of it.
-    // It's very useful for mobile browser debuging.
-
-    "id"            : "gameCanvas",
-    // "gameCanvas" sets the id of your canvas element on the web page, it's useful only on web.
-
-    "renderMode"    : 0,
-    // "renderMode" sets the renderer type, only useful on web :
-    //      0 - Automatically chosen by engine
-    //      1 - Forced to use canvas renderer
-    //      2 - Forced to use WebGL renderer, but this will be ignored on mobile browsers
-
-    "engineDir"     : "frameworks/cocos2d-html5/",
-    // In debug mode, if you use the whole engine to develop your game, you should specify its relative path with "engineDir",
-    // but if you are using a single engine file, you can ignore it.
-
-    "modules"       : ["cocos2d"],
-    // "modules" defines which modules you will need in your game, it's useful only on web,
-    // using this can greatly reduce your game's resource size, and the cocos console tool can package your game with only the modules you set.
-    // For details about modules definitions, you can refer to "../../frameworks/cocos2d-html5/modulesConfig.json".
-
-    "jsList"        : [
-    ]
-    // "jsList" sets the list of js files in your game.
- }
- *
- */
+var arrUpdate=[];
+//    ImgArr=[];
 
 cc.game.onStart = function(){
-    if(!cc.sys.isNative && document.getElementById("cocosLoading")) //If referenced loading.js, please remove it
-        document.body.removeChild(document.getElementById("cocosLoading"));
+    var winSize=cc.director.getVisibleSize();
+//    if(winSize.width/winSize.height==1024/768){
+    cc.view.setDesignResolutionSize(1024, 640, cc.ResolutionPolicy.FIXED_HEIGHT);
+//    }else{
+//        cc.view.setDesignResolutionSize(1136, 640, cc.ResolutionPolicy.FIXED_WIDTH);
+//    }
+    getMusicIsOpen();
 
-    // Pass true to enable retina display, on Android disabled by default to improve performance
-    cc.view.enableRetina(cc.sys.os === cc.sys.OS_IOS ? true : false);
-    // Adjust viewport meta
+    cc.director.setDisplayStats(false);
+
+
+
+
+
+
+
+
+    //初始展示自售广告
+    setSelfAD_Show(0);
+    setAd_Title1_Text("");
+    setAd_Title2_Text("");
+    setAd_Title3_Text("");
+    setAd_Title4_Text("");
+    setAd_Title5_Text("");
+    setLauchCheck(1);
+    var testJSB = new JSB.JSBinding();
+    testJSB.retain();
+    testJSB.initFullScreenAd();
+    testJSB.initBanner();
+    testJSB.release();
+
+    //test c++ to js
+    var testJSB2 = new JSB.JSBinding();
+    testJSB2.retain();
+    testJSB2.getLauchCheck();
+    testJSB2.getTitleText();
+    testJSB2.CallBackLauchCheck = function(i,j){
+        setLauchCheck(i);
+    };
+    testJSB2.postCommunityAvailable = function (i, j) {
+        cc.log("ktplay按钮是否显示"+i);
+        setCommunityAvailable(i);
+    };
+    testJSB2.selfADCALLBACK = function(str1){
+        cc.log("qweqwe");
+        cc.log(str1);
+        var strSrc = str1;
+        var strArray = new Array();
+        strArray = strSrc.split('|');
+        setSelfAD_Title(strArray[1]);
+        setSelfAD_Content(strArray[2]);
+        setSelfAD_URL(strArray[3]);
+        cc.log(getSelfAD_URL());
+
+    };
+    
+    testJSB2.setTitleText = function(str1){
+        cc.log(str1);
+        var strSrc = str1;
+        var strArray = new Array();
+        strArray = strSrc.split('|');
+        cc.log("testtest");
+        cc.log(strArray.length);
+
+        for(var i = 0 ;i < strArray.length-1;i++){
+            var str2Array = new Array();
+            str2Array = strArray[i].split(",");
+            switch(str2Array[0]){
+                case "Home":setAd_Title1_Text(str2Array[1]);setAd_Title1_URL(str2Array[2]);break;
+                case "GameSelectBottomLeft":setAd_Title2_Text(str2Array[1]);setAd_Title2_URL(str2Array[2]);break;
+                case "GameLoddingPage":setAd_Title3_Text(str2Array[1]);setAd_Title3_URL(str2Array[2]);break;
+                case "GamePageLeft":setAd_Title4_Text(str2Array[1]);setAd_Title4_URL(str2Array[2]);break;
+                case "GameOverButton3":setAd_Title5_Text(str2Array[1]);setAd_Title5_URL(str2Array[2]);break;
+            }
+        }
+
+        
+//        setAd_Title1_Text(strArray[0]);
+//        setAd_Title2_Text(strArray[1]);
+//        setAd_Title3_Text(strArray[2]);
+//        setAd_Title4_Text(strArray[3]);
+//        setAd_Title5_Text(strArray[4]);
+
+    };
+
+    //绑定回到主界面，以及主界面返回游戏方法
+    var testJSB3 = new JSB.JSBinding();
+    testJSB3.retain();
+    testJSB3.createForEnterOrForEnter();
+    testJSB3.enterBackgroud = function(){
+        cc.log("enterBackgroud");
+        //音效
+
+
+    };
+    testJSB3.forEnterBackgroud = function(){
+        cc.log("forEnterBackgroud" + getMusicIsOpen());
+        if(getMusicIsOpen() == "0"){
+            cc.log("am i in?");
+            if(getIsPauseGame()=="0"){
+                setSoundOpenOrNot(0);
+            }
+        }else{
+            cc.log("am i not in?");
+            if(getIsPauseGame()=="0") {
+                setSoundOpenOrNot(1);
+            }
+        }
+    };
+
+
+    var testJSB4 = new JSB.JSBinding();
+    testJSB4.retain();
+    testJSB4.getDownloadUrl();
+    testJSB4.setDownloadUrl = function(str1){
+        cc.log("download data:"+str1);
+        var strSrc = str1;
+        var strArray = strSrc.split('|');
+        var arrSize = (strArray.length-1)/5;
+        cc.log(arrSize);
+        var _arrUpdate = [];   //先声明一维
+        for(var k=0;k<arrSize;k++){        //一维长度为i,i为变量，可以根据实际情况改变
+            _arrUpdate[k]=[];    //声明二维，每一个一维数组里面的一个元素都是一个数组；
+            for(var j=0;j<5;j++){      //一维数组里面每个元素数组可以包含的数量p，p也是一个变量；
+                _arrUpdate[k][j]="";       //这里将变量初始化，我这边统一初始化为空，后面在用所需的值覆盖里面的值
+            }
+        }
+        var arr_index = 0;
+        for(var i = 0 ; i < arrSize;i++)
+        {
+            for(var j = 0 ; j < 5 ; j++)
+            {
+                if(strArray[arr_index] != null){
+                    _arrUpdate[i][j] = strArray[arr_index];
+                }
+                arr_index++;
+            }
+        }
+
+
+
+        cc.log("origin");
+        for(var i=0 ; i < arrSize; i++)
+        {
+
+            for(var j = 0 ; j < 5 ; j++)
+            {
+                cc.log(_arrUpdate[i][j]);//picture
+            }
+
+        }
+
+
+        var testJSB5 = new JSB.JSBinding();
+        testJSB5.retain();
+        testJSB5.addGold = function (i,j) {
+
+            setGold((parseInt(getGold()) || 0) + i);
+            var goldStr = "+"+i;
+            ShowGoldChange(cc.director.getRunningScene(), goldStr);
+
+        }
+        
+
+
+
+        arrUpdate=_arrUpdate;
+//        if(arrUpdate.length>0){
+//            setTimeout(function(){
+//                for(var i=0;i<arrUpdate.length;i++){
+//                    cc.loader.loadImg(arrUpdate[i][1], function (res, tex) {
+//                        ImgArr.push(tex);
+//                    });
+//                }
+//            },10);
+//        }
+    };
+    
+//    //(::)基地声音控制
+//    var testJSB_music=new JSB.JSBinding();
+//    testJSB_music.retain();
+//    testJSB_music.gameVoiceCallBack = function (i){
+//        cc.log("(::)in now------->在js中得数值"+ i);
+//        if (i != 2) {
+//            setSoundOpenOrNot(i);
+//        }
+//        testJSB_music.release();
+//    };
+//    testJSB_music.gameVoiceCallBack();
+
+//    var testJSB6 = new JSB.JSBinding();
+//    testJSB6.retain();
+//    testJSB6.freePanel();
+//    testJSB6.freeCallback=function(i,j){
+//        cc.log("abchhh");
+//        cc.log("freeCallback");
+//        cc.log(i);
+//        freenum=i;
+//        testJSB6.release();
+//    }
+
+
+
+
     cc.view.adjustViewPort(true);
-    // Setup the resolution policy and design resolution size
-    cc.view.setDesignResolutionSize(960, 640, cc.ResolutionPolicy.SHOW_ALL);
-    // Instead of set design resolution, you can also set the real pixel resolution size
-    // Uncomment the following line and delete the previous line.
-    // cc.view.setRealPixelResolution(960, 640, cc.ResolutionPolicy.SHOW_ALL);
-    // The game will be resized when browser size change
     cc.view.resizeWithBrowserSize(true);
     //load resources
-    cc.LoaderScene.preload(g_resources, function () {
-        cc.director.runScene(new HelloWorldScene());
-    }, this);
+    cc.director.runScene(new LoadingScene());
+
+//    cc.LoaderScene.preload(g_resources, function () {
+//
+//
+//        cc.director.runScene(new LoadingScene());
+//
+//    }, this);
 };
 cc.game.run();
