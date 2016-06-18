@@ -1,249 +1,228 @@
 /**
- * Created by George on 16/5/12.
+ * Created by langchenglai on 14-9-17.
  */
-var winSize=null;
-var HomeLayer=cc.Layer.extend({
-//    time:50,
-    man:null,
-    man2:null,
-    aa:null,
-    nervous:null,
-    isfailse:false,
-    isbaby:false,
-    headr1:null,
-    headr2:null,
-    headl1:null,
-    headl2:null,
-    headl3:null,
-    bird:null,
-    bird2:null,
-    people:null,
-    house:null,
-    hou:null,
-    ist:false,
-    isw:null,
-    ctor: function () {
+
+var AwakeLayer = cc.Layer.extend({
+    sp_man : null,   //人物角色
+    sp_face1 : null,  //人物的脸
+    sp_hammer : null,  //锤子
+    sp_hammer2 : null,  //锤子2
+    sp_bucket : null,   //水桶
+    sp_bucket2 : null,   //水桶2
+    sp_tv : null,  //电视
+    pre_Tag : null,
+    water1 : null,   //水
+    water2 : null,   //水
+    isMoving : null,
+    man_Position : null,   //角色位置
+    hammer2_Position : null,  //锤子2的位置
+    z1 : null,
+    z2 : null,
+    z3 : null,
+    lighting1 : null,   //灯光1
+    lighting2 : null,  //灯光2
+
+    ctor : function()
+    {
         this._super();
-        winSize = cc.director.getWinSize();
-        cc.log("ctor");
         this.init();
-
+        pre_Tag = 0;
+        slide_len1 = 0;
+        slide_len2 = 0;
+        slide_len3 = 0;
+        slide_len4 = 0;
+        isMoving = false;
+        _this = this;
     },
-    init: function () {
-        ist=false;
-        isw=false;
-        cc.log("init");
 
-//        this.schedule(this.step);
-        var ses=new cc.Sequence(new cc.CallFunc(function(){
-            playEffect(res.F01_2_SOUNDS);
-        }),new cc.DelayTime(7));
-        ses.setTag(11);
-        var ses1=new cc.Sequence(new cc.CallFunc(function(){
-            playEffect(res.F01_2_CRY);
-        }),new cc.DelayTime(7));
-        ses1.setTag(12);
-        var ses2=new cc.Sequence(new cc.CallFunc(function(){
-            playEffect(res.F01_GRIG_SOUNDS);
-        }),new cc.DelayTime(6));
-        ses2.setTag(13);
-//
-        if(getMusicIsOpen())
-        {
+    init : function()
+    {
+        playEffect(res.F12_ZZ_SOUNDS,true);
+        cc.log("qq");
+        var size =  cc.director.getWinSize();
 
+        var sp_bg = cc.Sprite.create("#com_bg_02.png");
+        sp_bg.setPosition(cc.p(size.width/2,size.height/2));
+        this.addChild(sp_bg);
 
-            this.runAction(ses.repeatForever());
+        var sp_land = cc.Sprite.create("#com_tudi2.png");
+        sp_land.setAnchorPoint(cc.p(0.5,0));
+        sp_land.setPosition(cc.p(size.width/2,0));
+        this.addChild(sp_land);
 
+        var sp_bed = cc.Sprite.create("#k_12_bed.png");
+        sp_bed.setPosition(cc.p(size.width/2,250));
+        this.addChild(sp_bed,2);
 
-        }
-        if(getMusicIsOpen()) {
+        var sp_desk = cc.Sprite.create("#k_12_desk.png");
+        sp_desk.setPosition(cc.p(336+170,200));
+        sp_bed.addChild(sp_desk);
 
-            this.runAction(ses1.repeatForever());
-        }
-        if(getMusicIsOpen()) {
+        sp_man = cc.Sprite.create("#k_12_man.png");
+        sp_man.setPosition(cc.p(336/2,235));
 
-            this.runAction(ses2.repeatForever());
-        }
+        sp_bed.addChild(sp_man,0,999);
 
+        sp_face1 = cc.Sprite.create("#k_12_man_face1.png");
+        sp_face1.setPosition(cc.p(85,180));
+        sp_man.addChild(sp_face1);
 
+        //坑爹男口
+        sp_face3 = cc.Sprite.create("#k_12_man_face1_1.png");
+        sp_face3.setScale(0.8);
+        sp_face3.setPosition(cc.p(85,180));
+        sp_man.addChild(sp_face3);
 
-
-
-
-//                              var bg=cc.Sprite.create("#com_bg_02.png");
-//        bg.setPosition(winSize.width/2,winSize.height/2);
-//        this.addChild(bg,0);
-        aa=cc.Sprite.create();
-        aa.setPosition(winSize.width/2,winSize.height/2);
-        this.addChild(aa,1);
-        //bg2   ground
-        var bg2=cc.Sprite.create("#k_01_bg.png");
-        bg2.setPosition(winSize.width/2,winSize.height/2);
-        this.addChild(bg2,1);
-        //bg3  house
-        var bg3=cc.Sprite.create("#k_01_bg_house.png");
-        bg3.setPosition(winSize.width/2,winSize.height/2);
-        this.addChild(bg3,1);
-        //eye
-        var eye1=cc.Sprite.create("#k_01_eye1.png");
-        eye1.setTag(9);
-        eye1.setPosition(winSize.width/2-260,365);        this.addChild(eye1,2);
-        var eye2=cc.Sprite.create("#k_01_eye2.png");
-        eye2.setTag(9);
-        eye2.setPosition(winSize.width/2-350,160);
-        this.addChild(eye2,2);
-        var eye3=cc.Sprite.create("#k_01_eye3.png");
-        eye3.setTag(9);
-        eye3.setPosition(winSize.width/2-430,460);
-        this.addChild(eye3,2);
-        var blink=new cc.Blink(0.5,1);
-        var repeat= new cc.RepeatForever(new cc.Sequence(blink,new cc.DelayTime(0.5)));
-        eye1.runAction(new cc.RepeatForever(new cc.Sequence(new cc.DelayTime(0.25),blink,new cc.DelayTime(0.25))));
-        eye2.runAction(repeat.clone());
-        eye3.runAction(repeat.clone());
-        //spider
-        var spider=cc.Sprite.create("#k_01_spider.png");
-        spider.setTag(4);
-        spider.setPosition(winSize.width/2-240,winSize.height*0.33);
-        this.addChild(spider,6);
-            //colorlayer
-        var color=new cc.LayerColor(cc.color(7, 10, 11, 225), 4, 67);
-        color.setAnchorPoint(0.5,1);
-        color.setPosition(41,75);
-        spider.addChild(color);
-            //scale
-//        var scale=new cc.ScaleBy(0.3,1,0.8);
-        var jump=new cc.JumpBy(0.8,cc.p(0,0),40,1);
-        spider.runAction(new cc.RepeatForever(new cc.Sequence(jump,jump.reverse())));
-        //man
-        man2=cc.Sprite.create("#k_01_man1.png");
-        man2.setTag(1);
-        man2.setPosition(winSize.width*0.53,winSize.height*0.36);
-        this.addChild(man2,2);
-
-            //animation
-         var animFrames=[];
-        for(var i=1;i<=3;i++)
-        {
-            var frame=cc.spriteFrameCache.getSpriteFrame("k_01_man"+i+".png");
-            animFrames.push(frame);
-        }
-        var mananimation=new cc.Animation(animFrames,0.15);
-//        mananimation.setDelayPerUnit(0.15);
-        var mananimate=new cc.Animate(mananimation);
-        mananimate.setTag(99);
-        man2.runAction(new cc.RepeatForever(mananimate));
-        //麻麻，我要回家
-        var word=cc.Sprite.create("#k_01_go-home.png");
-        word.setPosition(man2.getPositionX()-man2.getContentSize().width/2,man2.getPositionY());
-        this.addChild(word,7);
-
-        //bird
-        bird=cc.Sprite.create("#k_01_bird1.png");
-        bird.setPosition(winSize.width*0.6,winSize.height);
-        bird.setTag(1);
-        this.addChild(bird,4);
-        var animFramesbird=[];
-        for(var i=1;i<=2;i++)
-        {
-            var frame=cc.spriteFrameCache.getSpriteFrame("k_01_bird"+i+".png");
-            animFramesbird.push(frame);
-        }
-        var birdanimation=new cc.Animation(animFramesbird,0.15);
-        var birdanimate=new cc.Animate(birdanimation);
-        bird.runAction(birdanimate.repeatForever());
-        this.schedule(this.moveBird);
-
-
-//        var move=new cc.MoveTo(0.8,cc.p(winSize.width*0.45,winSize.height*0.83));
-//        var move2=new cc.MoveTo(1,cc.p(winSize.width*0.3,winSize.height));
-//        var sequence=new cc.Sequence(move,move2);
-//        bird.runAction(new cc.Sequence(new cc.Spawn(birdanimate,sequence).repeatForever(),new cc.DelayTime(0.2)));
-
-        //bird2
-        bird2=cc.Sprite.create("#k_01_bird3.png");
-        bird2.setPosition(winSize.width*0.25,winSize.height);
-        bird2.setTag(2);
-        this.addChild(bird2,4);
-        var animFramesbird2=[];
-        for(var i=3;i<=4;i++)
-        {
-            var frame=cc.spriteFrameCache.getSpriteFrame("k_01_bird"+i+".png");
-            animFramesbird2.push(frame);
-        }
-        var birdanimation2=new cc.Animation(animFramesbird2,0.15);
-        var birdanimate2=new cc.Animate(birdanimation2);
-        bird2.runAction(new cc.RepeatForever(birdanimate2));
-        this.schedule(this.moveBird2,0.05);
-
-        //gui
-        var baby=cc.Sprite.create("#k_01_skeleton.png");
-        baby.setScale(0.3);
-        baby.setTag(3);
-        baby.setPosition(winSize.width*0.74,winSize.height*0.5);
-        this.addChild(baby,2);
-
-        //鬼手
-        var babyleft=cc.Sprite.create("#k_01_skeleton_lift.png");
-//        babyleft.setAnchorPoint(1,0);
-        babyleft.setPosition(baby.width/2,baby.height*0.5);
-        baby.addChild(babyleft,2);
-
-
-        var babyright=cc.Sprite.create("#k_01_skeleton_right.png");
-//        babyright.setAnchorPoint(0,0);
-        babyright.setPosition(baby.width/2,baby.height*0.5);
-        baby.addChild(babyright,2);
-
-        //手动
-        var rotatel1=new cc.RotateTo(0.2,20);
-        var rotatel2=new cc.RotateTo(0.2,-20);
-        var rotateSeq=new cc.Sequence(rotatel1,rotatel2);
-        babyleft.runAction(new cc.RepeatForever(rotateSeq));
-        babyright.runAction(new cc.RepeatForever(rotateSeq.clone()));
-
-
-        //骷髅
-        headr1=cc.Sprite.create("#k_01_head.png");
-        headr1.setTag(5);
-        headr1.setScale(0.85);
-        headr1.setRotation(40);
-        headr1.setPosition(winSize.width*0.92,winSize.height*0.15);
-        this.addChild(headr1,2);
-        headr2=cc.Sprite.create("#k_01_head.png");
-        headr2.setTag(6);
-//        headr2.setScale(0.75);
-        headr2.setPosition(winSize.width*0.97,winSize.height*0.12);
-        this.addChild(headr2,2);
-
-        headl1=cc.Sprite.create("#k_01_head.png");
-        headl1.setTag(7);
-        headl1.setScale(0.5);
-        headl1.setRotation(-120);
-        headl1.setPosition(winSize.width*0.1,winSize.height*0.163);
-        this.addChild(headl1,2);
-
-        headl2=cc.Sprite.create("#k_01_head.png");
-        headl2.setTag(7);
-        headl2.setScale(0.7);
-        headl2.setRotation(90);
-        headl2.setPosition(winSize.width*0.17,winSize.height*0.14);
-        this.addChild(headl2,2);
-
-        headl3=cc.Sprite.create("#k_01_head.png");
-        headl3.setTag(8);
-        headl3.setRotation(180);
-        headl3.setPosition(winSize.width*0.13,winSize.height*0.125);
-        this.addChild(headl3,2);
+        var st = cc.ScaleBy.create(1,0.7);
+        var seq_face3 = cc.Sequence.create(st,st.reverse());
+        sp_face3.runAction(cc.RepeatForever.create(seq_face3));
 
 
 
 
 
-        var listener = cc.EventListener.create({
+
+        //坑爹男泡
+        sp_face4 = cc.Sprite.create("#k_12_man_bipao.png");
+        sp_face4.setAnchorPoint(cc.p(0,0.2));
+        sp_face4.setPosition(cc.p(87,185));
+        sp_face4.setScale(0.5);
+        sp_man.addChild(sp_face4);
+
+
+        sp_face5 = cc.Sprite.create("#k_12_man_face3.png");
+//        sp_face5.setScale(0.8);
+        sp_face5.setPosition(cc.p(85,170));
+        sp_face5.setVisible(false);
+        sp_man.addChild(sp_face5);
+
+        var st4 = cc.ScaleBy.create(1,2);
+        var seq_face4 = cc.Sequence.create(st4,st4.reverse());
+        sp_face4.runAction(cc.RepeatForever.create(seq_face4));
+
+        sp_face2 = cc.Sprite.create("#k_12_man_face2.png");
+        sp_face2.setPosition(cc.p(85,185));
+        sp_face2.setOpacity(0);
+        sp_man.addChild(sp_face2);
+
+
+        sp_Clock = cc.Sprite.create("#k_12_clock.png");
+        sp_Clock2 = cc.Sprite.create("#k_12_clock2.png");
+        sp_bucket = cc.Sprite.create("#k_12_tong.png");
+        sp_hammer = cc.Sprite.create("#k_12_chuizi.png");
+        sp_tv = cc.Sprite.create("#k_12_tv.png");
+        sp_hammer2 = cc.Sprite.create("#k_12_chuizi.png");
+        z1 = cc.Sprite.create("#k_12_z.png");
+        z2 = cc.Sprite.create("#k_12_z.png");
+        z3 = cc.Sprite.create("#k_12_z.png");
+
+
+        z1.setPosition(cc.p(240,365));
+        z1.setScale(1);
+        z2.setPosition(cc.p(270,390));
+        z2.setScale(1.1);
+        z3.setPosition(cc.p(300,415));
+        z1.setAnchorPoint(cc.p(0,0));
+        z2.setAnchorPoint(cc.p(0,0));
+        z3.setAnchorPoint(cc.p(0,0));
+        z3.setScale(1.3);
+        var z1_rt1 = cc.RotateTo.create(1.5,-20);
+        var z1_rt2 = cc.RotateTo.create(1.5,30);
+        var z1_mt1 = cc.MoveTo.create(1.5,cc.p(z1.getPositionX()-10,z1.getPositionY()-10));
+        var z1_mt2 = cc.MoveTo.create(1.5,cc.p(z1.getPositionX()+10,z1.getPositionY()+10));
+        var z1_dy = cc.ScaleBy.create(1.5,0.3);
+        var z1_seq_rt = cc.Sequence.create(z1_rt1,z1_rt2);
+        var z1_seq_dy = cc.Sequence.create(z1_dy,z1_dy.reverse());
+        var z1_seq_mt = cc.Sequence.create(z1_mt1,z1_mt2);
+        var z1_spawn = cc.Spawn.create(z1_seq_mt,z1_seq_dy,z1_seq_rt);
+//        var seq = cc.Sequence.create(rt,rt2);
+//        var spawn = cc.Spawn.create(seq,seq2);
+        var z2_rt1 = cc.RotateTo.create(1.5,30);
+        var z2_rt2 = cc.RotateTo.create(1.5,-20);
+        var z2_seq_rt = cc.Sequence.create(z2_rt1,z2_rt2);
+        var z2_mt1 = cc.MoveTo.create(1.5,cc.p(z2.getPositionX()-25,z2.getPositionY()-20));
+        var z2_mt2 = cc.MoveTo.create(1.5,cc.p(z2.getPositionX()+10,z2.getPositionY()+10));
+        var z2_seq_mt = cc.Sequence.create(z2_mt1,z2_mt2);
+        var z2_dy = cc.ScaleBy.create(1.5,0.4);
+        var z2_seq_dy = cc.Sequence.create(z2_dy,z2_dy.reverse());
+        var z2_spawn = cc.Spawn.create(z2_seq_mt,z2_seq_dy,z2_seq_rt);
+
+        var z3_rt1 = cc.RotateTo.create(1.5,-20);
+        var z3_rt2 = cc.RotateTo.create(1.5,30);
+        var z3_seq_rt = cc.Sequence.create(z3_rt1,z3_rt2);
+        var z3_mt1 = cc.MoveTo.create(1.5,cc.p(z3.getPositionX()-40,z3.getPositionY()-30));
+        var z3_mt2 = cc.MoveTo.create(1.5,cc.p(z3.getPositionX()+20,z3.getPositionY()+10));
+        var z3_seq_mt = cc.Sequence.create(z3_mt1,z3_mt2);
+        var z3_dy = cc.ScaleBy.create(1.5,0.5);
+        var z3_seq_dy = cc.Sequence.create(z3_dy,z3_dy.reverse());
+        var z3_spawn = cc.Spawn.create(z3_seq_mt,z3_seq_dy,z3_seq_rt);
+        z1.runAction(cc.RepeatForever.create(z1_spawn));
+        z2.runAction(cc.RepeatForever.create(z2_spawn));
+        z3.runAction(cc.RepeatForever.create(z3_spawn));
+
+
+        sp_Clock.setPosition(cc.p(size.width/2+335,350));
+        sp_Clock2.setPosition(cc.p(size.width/2+335,350));
+        sp_bucket.setPosition(cc.p(size.width/2+335,220));
+        sp_hammer.setPosition(cc.p(size.width/2-187,150));
+        sp_hammer2.setPosition(cc.p(size.width/2-107,380));
+        sp_tv.setPosition(cc.p(size.width/2-287,280));
+
+        sp_Clock2.setOpacity(0);
+        sp_hammer2.setOpacity(0);
+        sp_hammer2.setRotation(-40);
+        sp_hammer2.setAnchorPoint(cc.p(0.3,0.5));
+        sp_hammer2.setFlippedX(1);
+
+        sp_bed.addChild(z1,1,991);
+        sp_bed.addChild(z2,1,992);
+        sp_bed.addChild(z3,1,993);
+
+        this.addChild(sp_Clock,3,1);
+        this.addChild(sp_Clock2,3);
+        this.addChild(sp_bucket,3,2);
+        this.addChild(sp_hammer,1,3);
+        this.addChild(sp_hammer2,3);
+        this.addChild(sp_tv,3,4);
+
+
+        wire = new cc.Sprite("#k_12_tv_1.png");
+        wire.setPosition(cc.p(57,-17));
+        sp_tv.addChild(wire);
+
+
+
+        clock_needles1=new cc.Sprite("#k_12_clock_shizhen.png");
+        clock_needles1.attr({
+            x:sp_Clock.getBoundingBox().width/2,
+            y:sp_Clock.getBoundingBox().height/2
+        });
+
+        sp_Clock.addChild(clock_needles1);
+        clock_needles1.runAction(cc.rotateBy(1,6).repeatForever());
+
+        clock_needles2=new cc.Sprite("#k_12_clock_miaozhen.png");
+        clock_needles2.attr({
+            x:sp_Clock.getBoundingBox().width/2,
+            y:sp_Clock.getBoundingBox().height/2
+        });
+
+        sp_Clock.addChild(clock_needles2);
+        clock_needles2.runAction(cc.rotateBy(1,60).repeatForever());
+
+
+
+
+
+
+
+        man_Position = sp_man.getPosition();
+        hammer2_Position = sp_hammer2.getPosition();
+
+        var listener1 = cc.EventListener.create({
             event: cc.EventListener.TOUCH_ONE_BY_ONE,
-            swallowTouches:true,
-            onTouchBegan: function(touch, event){
+            swallowTouches: true,
+            onTouchBegan: function (touch, event) {
                 var target = event.getCurrentTarget();
 
                 var locationInNode = target.convertToNodeSpace(touch.getLocation());
@@ -251,619 +230,436 @@ var HomeLayer=cc.Layer.extend({
                 var rect = cc.rect(0, 0, s.width, s.height);
 
                 if (cc.rectContainsPoint(rect, locationInNode)) {
-                    cc.log("sprite began... x = %f, y = %f", locationInNode.x, locationInNode.y);
-//                    target.setOpacity(180);
+                    cc.log("sprite began... x = " + locationInNode.x + ", y = " + locationInNode.y);
+                    cc.log(target.getTag());
+
+
                     return true;
                 }
                 return false;
             },
-            onTouchMoved: function(touch, event){
-//                var target = event.getCurrentTarget(), delta = touch.getDelta();
-//                target.x += delta.x;
-//                target.y += delta.y;
-            },
-            onTouchEnded: function(touch, event){
+            onTouchMoved: function (touch, event) {
                 var target = event.getCurrentTarget();
-                if(ist)return;
-                if(target.getTag()==1)
-                {
-                    //画眼睛
-                    ist=true;
-                    cc.log("1画眼睛");
-                    target.getParent().unschedule(target.getParent().moveBird);
-                    var draw1 = new cc.DrawNode();
-                    target.getParent().addChild(draw1, 10);
-                    draw1.drawDot( cc.p(target.getPositionX()-target.width*0.04,target.getPositionY()-target.height*0.15), 1.5, cc.color( 255,255, 113, 255) );
 
-                    var draw2 = new cc.DrawNode();
-                    target.getParent().addChild(draw2, 10);
-                    draw1.drawDot( cc.p(target.getPositionX()+target.width*0.01,target.getPositionY()-target.height*0.1), 1.5, cc.color( 255,255, 113, 255) );
+                var locationMoveNode = target.convertToNodeSpace(touch.getLocation());
+                cc.log("x:",locationMoveNode.x);
+                cc.log("y:",locationMoveNode.y);
+                cc.log(slide_len1);
 
-                    target.getParent().runAction(new cc.Sequence(new cc.DelayTime(0.5),
-                    new cc.CallFunc(function(){
-                        draw1.removeFromParent(true);
-                        draw2.removeFromParent(true);
-                        target.getParent().schedule(target.getParent().moveBird);
-                        ist=false;
-//                        var draw11 = new cc.DrawNode();
-//                        target.getParent().addChild(draw11, 10);
-//                        draw11.drawDot( cc.p(target.getPositionX()-target.width*0.04,target.getPositionY()-target.height*0.15), 1.5, cc.color( 0,0, 0, 255) );
-//
-//                        var draw21 = new cc.DrawNode();
-//                        target.getParent().addChild(draw21, 10);
-//                        draw11.drawDot( cc.p(target.getPositionX()+target.width*0.01,target.getPositionY()-target.height*0.1), 1.5, cc.color( 0,0, 0, 255) );
-                    })
-                    ));
+            },
+
+
+
+
+
+            onTouchEnded: function (touch, event) {
+
+
+                var target = event.getCurrentTarget();
+
+
+
+                var locationInNode = target.convertToNodeSpace(touch.getLocation());
+                var s = target.getContentSize();
+                var rect = cc.rect(0, 0, s.width, s.height);
+
+                if (target == z1 || target == z2 || target == z3 ) {
+                    playEffect(res.BUTTON_SOUNDS);
+                    target.setVisible(false);
+                    cc.eventManager.removeListeners(target);
+
+
                 }
-                else if(target.getTag()==2)
-                {
-                    //画眼睛
-                    ist=true;
-                    target.getParent().unschedule(target.getParent().moveBird2);
 
-                    var draw = new cc.DrawNode();
-                    target.getParent().addChild(draw, 10);
-                    draw.drawDot( cc.p(target.getPositionX()-target.width*0.04,target.getPositionY()-target.height*0.15), 0.55, cc.color( 255,255, 113, 255) );
 
-                    var draw2 = new cc.DrawNode();
-                    target.getParent().addChild(draw2, 10);
-                    draw2.drawDot( cc.p(target.getPositionX()+target.width*0.01,target.getPositionY()-target.height*0.1), 0.55, cc.color( 255,255, 113, 255) );
 
-                    target.getParent().runAction(new cc.Sequence(new cc.DelayTime(1),
-                        new cc.CallFunc(function(){
+                if(!z1.isVisible() && !z2.isVisible() && !z3.isVisible() ){
+                    cc.log("you win!");
+                    sp_face3.setVisible(false);
+                    sp_face4.setVisible(false);
+                    sp_face3.stopAllActions();
+                    sp_face4.stopAllActions();
+                    sp_face3.setOpacity(0);
+                    sp_face4.setOpacity(0);
+                    sp_face1.stopAllActions();
+                    stopAllEffect();
+                    playEffect(res.F12_WIN_SOUNDS);
+                    cc.eventManager.removeListeners(sp_bucket);
+                    cc.eventManager.removeListeners(sp_hammer);
+                    cc.eventManager.removeListeners(sp_tv);
+                    cc.eventManager.removeListeners(sp_Clock);
+                    cc.eventManager.removeListeners(z1);
+                    cc.eventManager.removeListeners(z2);
+                    cc.eventManager.removeListeners(z3);
+                    cc.eventManager.removeListeners(sp_man);
+//                    var frame = cc.SpriteFrame.create(res.k_12_man_face2_png,cc.rect(0,0,92,72));
+                    sp_face1.setSpriteFrame("k_12_man_face2.png");
 
-                            draw.removeFromParent(true);
-                            draw2.removeFromParent(true);
-                            target.getParent().schedule(target.getParent().moveBird2);
-                            ist=false;
-//                            var draw1 = new cc.DrawNode();
-//                            target.getParent().addChild(draw1, 10);
-//                            draw1.drawDot( cc.p(winSize.width*0.543,winSize.height*0.7), 0.55, cc.color( 0,0, 0, 255) );
-//
-//                            var draw21 = new cc.DrawNode();
-//                            target.getParent().addChild(draw21, 10);
-//                            draw21.drawDot( cc.p(winSize.width*0.55,winSize.height*0.7), 0.55, cc.color( 0,0, 0, 255) );
-                        })
-                    ));
-                    cc.log("2画眼睛");
+
+                    var seq = cc.Sequence.create(cc.DelayTime.create(0.8),cc.CallFunc.create(function(){
+                        sp_face1.setVisible(false);
+                        var animFrame=["k_12_man_wake1.png","k_12_man_wake2.png","k_12_man_wake1.png","k_12_man_wake2.png","k_12_man_wake1.png","k_12_man_wake2.png"];
+                        var animFrames=[];
+                        for(var i=0;i<animFrame.length;i++){
+                            var Emenyframe=cc.spriteFrameCache.getSpriteFrame(animFrame[i]);
+                            animFrames.push(Emenyframe)
+                        }
+                        var animation=new cc.Animation(animFrames,0.2);
+                        var animate=new cc.Animate(animation);
+                        sp_man.runAction(animate);
+
+                    },this),cc.DelayTime.create(2),cc.CallFunc.create(function(){
+                        sp_man.stopAllActions();
+                        ShowSuccessedPanel(target.parent.parent.getParent(),12);
+                    },this));
+                    target.runAction(seq);
+                    return;
+
                 }
-                else if(target.getTag()==3)
+
+
+                if(target.getTag() == 999)
                 {
-                    //鬼  放大吓死男 失败
-//                    new cc.CallFunc(function(){
-//                        baby.setVisible(false);man2.setVisible(false);
-//                        man=cc.Sprite.create("#K_01_man-die.png");
-//                        man.setPosition(winSize.width*0.53,winSize.height*0.36);
-//                        baby.getParent().addChild(man,2);
-//                    }),
-//                    new cc.DelayTime(1.5),
-//                        new cc.CallFunc(function(){ShowFaildPPanel(baby.getParent().getParent(),1);})));
-                    ist=true;
-                    if(target.getParent().isbaby)
+                    playEffect(res.BUTTON_SOUNDS);
+                    if(sp_face3.isVisible()){
+                        sp_face1.setSpriteFrame("k_12_man_face3.png");
+                        sp_face3.setVisible(false);
+                        sp_face4.setVisible(false);
+//                        sp_face5.setVisible(true);
+                        sp_face1.stopAllActions();
+                        sp_face1.runAction(cc.Sequence.create(cc.DelayTime.create(1),cc.CallFunc.create(function(){
+                            sp_face1.setSpriteFrame("k_12_man_face1.png");
+                            sp_face3.setVisible(true);
+                            sp_face4.setVisible(true);
+                        })));
+
+                    }else{
+                        sp_face1.setSpriteFrame("k_12_man_face1.png");
+//                        sp_face1.setVisible(true);
+                        sp_face3.setVisible(true);
+                        sp_face4.setVisible(true);
+//                        sp_face5.setVisible(false);
+                    }
+                    return;
+                }
+
+                if(target.getTag() == 991 || target.getTag() == 992 || target.getTag() == 993 || target.getTag() == 994)
+                {
+                    return false;
+                }
+
+                if (cc.rectContainsPoint(rect, locationInNode)) {
+                    if(isMoving){
                         return;
-                    target.getParent().isbaby=true;
-                    cc.log("鬼  放大吓死男");
-                    var scale=new cc.ScaleTo(0.5,1);
-                    baby.runAction(new cc.Sequence(scale,
-                            new cc.CallFunc(function(){
-                                man2.setVisible(false);
-//                                baby.setVisible(false);
-                                nervous= cc.Sprite.create("#k_01_man_nervous1.png");
-                                nervous.setPosition(winSize.width*0.53,winSize.height*0.36);
-                                man2.getParent().addChild(nervous,2);
-                                var nervousFrames=[];
-                                var framen1=cc.spriteFrameCache.getSpriteFrame("k_01_man_nervous1.png");
-                                nervousFrames.push(framen1);
-                                var framen2=cc.spriteFrameCache.getSpriteFrame("k_01_man_nervous2.png");
-                                nervousFrames.push(framen2);
-                                var framen3=cc.spriteFrameCache.getSpriteFrame("k_01_man_nervous1.png");
-                                nervousFrames.push(framen3);
-                                var framen4=cc.spriteFrameCache.getSpriteFrame("k_01_man_nervous2.png");
-                                nervousFrames.push(framen4);
-                                var animationn = new cc.Animation(nervousFrames,0.2);
-                                animationn.setLoops(2);
-                                var actionn = cc.animate(animationn);
-                                nervous.runAction(actionn);
-                                playEffect(res.F01_CRY);
-                                cc.log("dddd");
-                            }),new cc.DelayTime(1)
-                    ,new cc.CallFunc(function(){
-                        nervous.setVisible(false);word.setVisible(false);
-                        man=cc.Sprite.create("#k_01_man-die.png");
-                        man.setPosition(winSize.width*0.53,winSize.height*0.36);
-                        baby.getParent().addChild(man,2);
-                            var animFrames2=[];
-                            var frame21=cc.spriteFrameCache.getSpriteFrame("k_01_man-die.png");
-                            animFrames2.push(frame21);
-                            var frame22=cc.spriteFrameCache.getSpriteFrame("k_01_man-die2.png");
-                            animFrames2.push(frame22);
-                            var animation2 = new cc.Animation(animFrames2,0.3);
-                            var action2 = cc.animate(animation2);
-                            man.runAction(action2.repeatForever());
-                            cc.log("dddd2");
-                    }),
-                    new cc.DelayTime(1.5),
-                    new cc.CallFunc(function(){
-                        man.getParent().stopAllActions();
-                        ShowFaildPPanel(baby.getParent().getParent(),1,1);
-                    })
-                    ));
-                }
-                else if(target.getTag()==4)
-                {
-                    //蜘蛛  跳到坑爹难身上咬死，然后爆炸
-                    cc.log("蜘蛛  跳到坑爹难身上咬死，然后爆炸");
-//
+                    }
+                    sp_face3.stopAllActions();
+                    sp_face4.stopAllActions();
+                    isMoving = true;
+                    z1.setVisible(false);
+                    z2.setVisible(false);
+                    z3.setVisible(false);
+                    cc.eventManager.removeListeners(sp_bucket);
+                    cc.eventManager.removeListeners(sp_hammer);
+                    cc.eventManager.removeListeners(sp_tv);
+                    cc.eventManager.removeListeners(sp_Clock);
+                    cc.eventManager.removeListeners(z1);
+                    cc.eventManager.removeListeners(z2);
+                    cc.eventManager.removeListeners(z3);
+                    cc.eventManager.removeListeners(sp_man);
+                    pre_Tag = target.getTag();
+                    if(target.getTag() == 1){
+                        sp_face3.setVisible(false);
+                        sp_face4.setVisible(false);
+                        //Clock's operation
+                        clock_needles2.stopAllActions();
+                        clock_needles1.stopAllActions();
+                        stopAllEffect();
+                        playEffect(res.F12_CLOCK_SOUNDS);
+                        sp_face1.setOpacity(0);
+                        sp_Clock.setOpacity(0);
+                        var n1 = clock_needles1.getRotation();
+                        var n2 = clock_needles2.getRotation();
 
-                    ist=true;
-
-                    color.runAction(new cc.FadeOut(0.1));
-                    spider.runAction(new cc.Sequence(new cc.JumpTo(0.4,cc.p(winSize.width*0.53,winSize.height*0.36),40,1),new cc.DelayTime(0.2)
-                     ,cc.CallFunc(function(){
-                            man2.runAction(new cc.Sequence(
-                                new cc.CallFunc(function(){ man2.setVisible(false);spider.setVisible(false);word.setVisible(false);})
-                                ,new cc.CallFunc(function(){
-                                    var animFrames22=[];
-                                    var frame221=cc.spriteFrameCache.getSpriteFrame("k_01_man_zhongdu1.png");
-                                    animFrames22.push(frame221);
-                                    var frame222=cc.spriteFrameCache.getSpriteFrame("k_01_man_zhongdu2.png");
-                                    animFrames22.push(frame222);
-                                    var frame23=cc.spriteFrameCache.getSpriteFrame("k_01_man_zhongdu3.png");
-                                    animFrames22.push(frame23);
-                                    var animation22 = new cc.Animation(animFrames22,0.3);
-                                    playEffect(res.F09_JINGXIA);
-
-                                    var action22 = cc.animate(animation22);
-                                    man=cc.Sprite.create("#k_01_man_zhongdu1.png");
-                                    man.setPosition(winSize.width*0.53,winSize.height*0.36);
-                                    man2.getParent().addChild(man,2);
-                                    man.runAction(action22);
-                                    cc.log("蜘蛛  跳到坑爹难身上咬死，然后爆炸2");
-                                    man.runAction(new cc.Sequence(action22,new cc.DelayTime(0.3),new cc.CallFunc(function(){man.setSpriteFrame("k_01_man-die.png")})));
+                        sp_Clock2.setOpacity(255);
 
 
-                                })
-                                ,new cc.DelayTime(2),
-                                new cc.CallFunc(function(){
-                                    man.getParent().stopAllActions();
-                                    ShowFaildPPanel(man.getParent().getParent(),1,0);
-                                })));
+                        clock_needles11=new cc.Sprite("#k_12_clock_shizhen.png");
+                        clock_needles11.attr({
+                            x:sp_Clock2.getBoundingBox().width/2,
+                            y:sp_Clock2.getBoundingBox().height/2
+                        });
+
+                        clock_needles22=new cc.Sprite("#k_12_clock_miaozhen.png");
+                        clock_needles22.attr({
+                            x:sp_Clock2.getBoundingBox().width/2,
+                            y:sp_Clock2.getBoundingBox().height/2
+                        });
+                        clock_needles22.setRotation(n2);
+                        clock_needles11.setRotation(n1);
 
 
 
-                        })
-                    ));
-//                    color.runAction(new cc.FadeOut(0.1));
-//                    man2.runAction(new cc.Sequence(
-//                        new cc.CallFunc(function(){ man2.setVisible(false);spider.setVisible(false);})
-//
-//                        ,new cc.CallFunc(function(){
-//                            var blood=cc.Sprite.create("#k_01_blood.png");
-//                            blood.setPosition(winSize.width*0.53,winSize.height*0.1);
-//                            man2.getParent().addChild(blood,2);
-//
-//                            man=cc.Sprite.create("#k_01_man-die.png");
-//                            man.setPosition(winSize.width*0.53,winSize.height*0.36);
-//                            man2.getParent().addChild(man,2);
-//                            var animFrames2=[];
-//                            var frame21=cc.spriteFrameCache.getSpriteFrame("k_01_man-die.png");
-//                            animFrames2.push(frame21);
-//                            var frame22=cc.spriteFrameCache.getSpriteFrame("k_01_man-die2.png");
-//                            animFrames2.push(frame22);
-//                            var animation2 = new cc.Animation(animFrames2,0.3);
-//                            var action2 = cc.animate(animation2);
-//                            man.runAction(action2.repeatForever());
-//
-//                        })
-//                    ,new cc.DelayTime(1),
-//                    new cc.CallFunc(function(){ShowFaildPPanel(man.getParent().getParent(),1);})));
-                }
-                else if(target.getTag()==6)
-                {
-                    //gulu
-                    ist=true;
-                    cc.log("gulur");
-                    var light=new cc.Sprite("#k_01_headlight.png");
-                    light.setPosition(headr1.width/2,headr1.height/2);
-                    headr1.addChild(light,2);
-//                    var seq=new cc.Sequence(new cc.FadeIn(0.1),new cc.DelayTime(1),new cc.FadeOut(0.1));
-                    var move=new cc.MoveBy(0.1,cc.p(3,3));
-                    var move2=new cc.MoveBy(0.1,cc.p(-3,-3));
-                    var seq=new cc.Sequence(move,move2);
-                    var sca=new cc.ScaleTo(0.1,0.9);
-                    var sca2=new cc.ScaleTo(0.1,1.1);
-                    var seq2=new cc.Sequence(sca,sca2);
-                    light.runAction(new cc.Sequence(new cc.FadeIn(0.1),new cc.DelayTime(1)));
-                    headr1.runAction(new cc.Spawn(seq,seq2).repeatForever());
+                        sp_Clock2.addChild(clock_needles11);
+                        sp_Clock2.addChild(clock_needles22);
+                        var rt1 = cc.RotateTo.create(0.1,-20);
+                        var rt2 = cc.RotateTo.create(0.1,20);
+                        var seq = cc.Sequence.create(rt1,rt2);
+                        sp_Clock2.runAction(cc.Repeat.create(seq,6));
 
 
-                    var light2=new cc.Sprite("#k_01_headlight.png");
-                    light2.setPosition(headr2.width/2,headr2.height/2);
-                    headr2.addChild(light2,2);
-                    light2.runAction(new cc.Sequence(new cc.FadeIn(0.1),new cc.DelayTime(1)));
-                    headr2.runAction(new cc.Spawn(seq.clone(),seq2.clone()).repeatForever());
-
-                    baby.runAction(new cc.Sequence(
-                        new cc.CallFunc(function(){
-                            man2.setVisible(false);
-//                                baby.setVisible(false);
-                            nervous= cc.Sprite.create("#k_01_man_nervous1.png");
-                            nervous.setPosition(winSize.width*0.53,winSize.height*0.36);
-                            man2.getParent().addChild(nervous,2);
-                            var nervousFrames=[];
-                            var framen1=cc.spriteFrameCache.getSpriteFrame("k_01_man_nervous1.png");
-                            nervousFrames.push(framen1);
-                            var framen2=cc.spriteFrameCache.getSpriteFrame("k_01_man_nervous2.png");
-                            nervousFrames.push(framen2);
-                            var framen3=cc.spriteFrameCache.getSpriteFrame("k_01_man_nervous1.png");
-                            nervousFrames.push(framen3);
-                            var framen4=cc.spriteFrameCache.getSpriteFrame("k_01_man_nervous2.png");
-                            nervousFrames.push(framen4);
-                            var animationn = new cc.Animation(nervousFrames,0.2);
-                            var actionn = cc.animate(animationn);
-                            nervous.runAction(actionn);
-                            playEffect(res.F01_CRY);
-                            cc.log("dddd");
-                        }),new cc.DelayTime(1)
-                        ,new cc.CallFunc(function(){
-                            nervous.setVisible(false);word.setVisible(false);
-                            man=cc.Sprite.create("#k_01_man-die.png");
-                            man.setPosition(winSize.width*0.53,winSize.height*0.36);
-                            baby.getParent().addChild(man,2);
-                            var animFrames2=[];
-                            var frame21=cc.spriteFrameCache.getSpriteFrame("k_01_man-die.png");
-                            animFrames2.push(frame21);
-                            var frame22=cc.spriteFrameCache.getSpriteFrame("k_01_man-die2.png");
-                            animFrames2.push(frame22);
-                            var animation2 = new cc.Animation(animFrames2,0.3);
-                            var action2 = cc.animate(animation2);
-                            man.runAction(action2.repeatForever());
-                            cc.log("dddd2");
-                        }),
-                        new cc.DelayTime(1.5),
-                        new cc.CallFunc(function(){
-                            man.getParent().stopAllActions();
-                            ShowFaildPPanel(baby.getParent().getParent(),1,1);
-                        })
-                    ));
-                    cc.log("ghj");
-                }
-                else if(target.getTag()==8)
-                {
-                    //gulu
-                    ist=true;
-                    var light=new cc.Sprite("#k_01_headlight.png");
-                    light.setPosition(target.width/2,target.height/2);
-                    target.addChild(light,2);
-                    light.runAction(new cc.Sequence(new cc.FadeIn(0.1),new cc.DelayTime(1)));
-
-                    var move=new cc.MoveBy(0.1,cc.p(3,3));
-                    var move2=new cc.MoveBy(0.1,cc.p(-3,-3));
-                    var seq=new cc.Sequence(move,move2);
-                    var sca=new cc.ScaleTo(0.1,0.9);
-                    var sca2=new cc.ScaleTo(0.1,1.1);
-                    var seq2=new cc.Sequence(sca,sca2);
-
-                    var light2=new cc.Sprite("#k_01_headlight.png");
-                    light2.setPosition(headl1.width/2,headl1.height/2);
-                    headl1.addChild(light2,4);
-                    light2.runAction(new cc.Sequence(new cc.FadeIn(0.3),new cc.DelayTime(1)));
-                    headl1.runAction(new cc.Spawn(seq,seq2).repeatForever());
-
-                    var light3=new cc.Sprite("#k_01_headlight.png");
-                    light3.setPosition(headl2.width/2,headl2.height/2);
-                    headl2.addChild(light3,4);
-                    light3.runAction(new cc.Sequence(new cc.FadeIn(0.3),new cc.DelayTime(1)));
-                    headl2.runAction(new cc.Spawn(seq.clone(),seq2.clone()).repeatForever());
-                    target.runAction(new cc.Spawn(seq.clone(),seq2.clone()).repeatForever());
-
-                    baby.runAction(new cc.Sequence(
-                        new cc.CallFunc(function(){
-                            man2.setVisible(false);
-//                                baby.setVisible(false);
-                            nervous= cc.Sprite.create("#k_01_man_nervous1.png");
-                            nervous.setPosition(winSize.width*0.53,winSize.height*0.36);
-                            man2.getParent().addChild(nervous,2);
-                            var nervousFrames=[];
-                            var framen1=cc.spriteFrameCache.getSpriteFrame("k_01_man_nervous1.png");
-                            nervousFrames.push(framen1);
-                            var framen2=cc.spriteFrameCache.getSpriteFrame("k_01_man_nervous2.png");
-                            nervousFrames.push(framen2);
-                            var framen3=cc.spriteFrameCache.getSpriteFrame("k_01_man_nervous1.png");
-                            nervousFrames.push(framen3);
-                            var framen4=cc.spriteFrameCache.getSpriteFrame("k_01_man_nervous2.png");
-                            nervousFrames.push(framen4);
-                            var animationn = new cc.Animation(nervousFrames,0.2);
-                            var actionn = cc.animate(animationn);
-                            nervous.runAction(actionn);
-                            playEffect(res.F05_MANAMAZED_SOUNDS);
-                            cc.log("dddd");
-                        }),new cc.DelayTime(1)
-                        ,new cc.CallFunc(function(){
-                            nervous.setVisible(false);word.setVisible(false);
-                            man=cc.Sprite.create("#k_01_man-die.png");
-                            man.setPosition(winSize.width*0.53,winSize.height*0.36);
-                            baby.getParent().addChild(man,2);
-                            var animFrames2=[];
-                            var frame21=cc.spriteFrameCache.getSpriteFrame("k_01_man-die.png");
-                            animFrames2.push(frame21);
-                            var frame22=cc.spriteFrameCache.getSpriteFrame("k_01_man-die2.png");
-                            animFrames2.push(frame22);
-                            var animation2 = new cc.Animation(animFrames2,0.3);
-                            var action2 = cc.animate(animation2);
-                            man.runAction(action2.repeatForever());
-                            cc.log("dddd2");
-                        }),
-                        new cc.DelayTime(1.5),
-                        new cc.CallFunc(function(){
-                            man.getParent().stopAllActions();
-                            ShowFaildPPanel(baby.getParent().getParent(),1,1);
-                        })
-                    ));
+                        var action = cc.Sequence.create(cc.DelayTime.create(0.1  * 6 +0.1),cc.CallFunc.create(function(){
 
 
+                            playEffect(res.F16_FallDown);
 
-                    cc.log("gulul");
-                }
-                else if(target.getTag()==9)
-                {
-                    //鬼眼
-                    cc.log("鬼眼");
+                        }.bind(this),this),cc.DelayTime.create(0.1  * 6 +0.1),cc.CallFunc.create(function(){
+                            target.parent.def_State();
 
-                    var light=new cc.Sprite("#k_06_linghun.png");
-                    light.setPosition(target.width/2,target.height/2);
-                    target.addChild(light,4);
-                    light.runAction(new cc.Sequence(new cc.FadeIn(0.3),new cc.DelayTime(1),new cc.FadeOut(0.1)));
+                            sp_Clock2.setRotation(0);
+
+                        }.bind(this),this));
+                        sp_Clock2.runAction(action);
+
+
+                        //man's operation
+//                        var frame = cc.SpriteFrame.create(res.k_12_man3_png,cc.rect(0,0,148,228));
+                        sp_man.setSpriteFrame("k_12_man3.png");
+
+                        var mt1 = cc.MoveTo.create(0.1,cc.p(man_Position.x-10,man_Position.y));
+                        var mt2 = cc.MoveTo.create(0.1,cc.p(man_Position.x+10,man_Position.y));
+                        var seq2 = cc.Sequence.create(mt1,mt2);
+                        sp_man.runAction(cc.Repeat.create(seq2,6));
+
+                    }else if(target.getTag() == 2){
+                        //water's operation
+                        stopAllEffect();
+
+                        sp_bucket.setOpacity(0);
+                        water1 = cc.Sprite.create("#k_12_water.png");
+                        water1.setPosition(cc.p(size.width/2+150,400));
+                        water1.setOpacity(0);
+                        target.parent.addChild(water1,4);
+
+                        water2 = cc.Sprite.create("#k_12_water2.png");
+                        water2.setPosition(cc.p(size.width/2+20,300));
+                        water2.setOpacity(0);
+                        target.parent.addChild(water2,4);
+
+
+                        sp_bucket2 = cc.Sprite.create("#k_12_tong.png");
+                        sp_bucket2.setPosition(cc.p(size.width/2+250,500));
+                        sp_bucket2.setOpacity(255);
+                        target.parent.addChild(sp_bucket2,4);
+
+
+                        var seq = cc.Sequence.create(cc.CallFunc.create(function(){
+                                var rt = cc.RotateTo.create(0.4,-90);
+                                sp_bucket2.runAction(rt);
+                            }),  cc.DelayTime.create(0.3),cc.CallFunc.create(function(){
+                                playEffect(res.F12_WATER_SOUNDS);
+
+                                water1.setOpacity(255);
+                                water2.setOpacity(0);
+                                sp_bucket2.setOpacity(0);
+
+
+                            }.bind(this),this),
+                            cc.DelayTime.create(0.5),cc.CallFunc.create(function(){
+                                sp_face3.setVisible(false);
+                                sp_face4.setVisible(false);
+                                water1.setOpacity(0);
+                                water2.setOpacity(255);
+                                var tt = cc.FadeOut.create(3);
+                                water2.runAction(tt);
+                                sp_face1.setOpacity(0);
+                                //man's operation
+//                                var frame = cc.SpriteFrame.create(k_12_man2_png,cc.rect(0,0,148,228));
+                                sp_man.setSpriteFrame("k_12_man7.png");
+
+                            }.bind(this),this),
+                            cc.DelayTime.create(0.3),cc.CallFunc.create(function(){
+                                playEffect(res.F16_FallDown);
+                                var mt1 = cc.MoveTo.create(0.1,cc.p(man_Position.x-5,man_Position.y));
+                                var mt2 = cc.MoveTo.create(0.1,cc.p(man_Position.x+5,man_Position.y));
+                                var seq2 = cc.Sequence.create(mt1,mt2);
+                                sp_man.runAction(cc.Repeat.create(seq2,6));
+                            }.bind(this),this)
+                        );
+                        water1.runAction(seq);
+
+
+                        var seq1 = cc.Sequence.create(cc.DelayTime.create(0.1 * 2 * 6 +1.3 +0.1),cc.CallFunc.create(function(){
+                            target.parent.def_State();
+                        }.bind(this),this));
+                        sp_man.runAction(seq1);
+                    }else if(pre_Tag == 3){
+                        stopAllEffect();
+
+                        sp_hammer.setOpacity(0);
+                        sp_hammer2.setOpacity(255);
+                        var mb = cc.MoveTo.create(0.2,cc.p(hammer2_Position.x+40,hammer2_Position.y));
+                        var rt = cc.RotateBy.create(0.2,30);
+                        var spawn = cc.Spawn.create(mb,rt);
+                        var seq = cc.Sequence.create(cc.DelayTime.create(0.1),cc.CallFunc.create(function(){
+
+                        }),spawn,cc.DelayTime.create(0.1),cc.CallFunc.create(function(){
+                            sp_hammer2.setOpacity(0);
+                            sp_face1.setOpacity(0);
+                            playEffect(res.F12_HIT_SOUNDS);
+                            sp_face3.setVisible(false);
+                            sp_face4.setVisible(false);
+//                            var frame = cc.SpriteFrame.create(res.k_12_man4_png,cc.rect(0,0,148,228));
+                            sp_man.setSpriteFrame("k_12_man4.png");
+                        }),cc.DelayTime.create(0.3),cc.CallFunc.create(function(){
+                            var sp = cc.Sprite.create("#k_12_man4_yun1.png");
+                            sp.setPosition(cc.p(87,240));
+                            sp_man.addChild(sp);
+                            playEffect(res.F12_DIZZY_SOUNDS);
+                            var animFrames=[];
+                            for(var i=1;i<=2;i++){
+                                var frame=cc.spriteFrameCache.getSpriteFrame("k_12_man4_yun"+i+".png");
+                                animFrames.push(frame)
+                            }
+                            var animation=new cc.Animation(animFrames,0.2);
+                            var animate=new cc.Animate(animation);
+                            sp.runAction(cc.Repeat.create(animate,3));
+                        }),cc.DelayTime.create(0.5),cc.CallFunc.create(function(){
+                            target.parent.def_State();
+                            sp_hammer2.setPosition(hammer2_Position);
+                            sp_hammer2.setRotation(-40);
+                        }));
+                        sp_hammer2.runAction(seq);
+                    }else if(pre_Tag == 4){
+                        stopAllEffect();
+                        playEffect(res.F12_GHOST_SOUNDS);
+
+
+                        wire.setSpriteFrame("k_12_tv_2.png")
+                        var lighting = new cc.Sprite("#k_12_tv_3.png");
+                        lighting.setPosition(cc.p(80,35));
+                        wire.addChild(lighting);
+
+                        var seq = cc.Sequence.create(cc.DelayTime.create(0.4),cc.CallFunc.create(function(){
+                            lighting.setVisible(false);
+                            var tv_Content = new cc.Sprite("#k_12_tv_4.png");
+                            tv_Content.setPosition(cc.p(75,85));
+                            sp_tv.addChild(tv_Content);
+                            var animFrame=["k_12_tv_4.png","k_12_tv_5.png","k_12_tv_4.png","k_12_tv_5.png","k_12_tv_6.png","k_12_tv_7.png","k_12_tv_6.png","k_12_tv_7.png","k_12_tv_6.png","k_12_tv_7.png"];
+                            var animFrames=[];
+                            for(var i=0;i<animFrame.length;i++){
+                                var Emenyframe=cc.spriteFrameCache.getSpriteFrame(animFrame[i]);
+                                animFrames.push(Emenyframe)
+                            }
+                            var animation=new cc.Animation(animFrames,0.2);
+                            var animate=new cc.Animate(animation);
+                            tv_Content.runAction(animate);
+
+                        },this),cc.DelayTime.create(1),cc.CallFunc.create(function(){
+                            sp_man.setSpriteFrame("k_12_man3.png");
+                            sp_face3.setVisible(false);
+                            sp_face4.setVisible(false);
+                            playEffect(res.F16_FallDown);
+                            var mt1 = cc.MoveTo.create(0.1,cc.p(man_Position.x-10,man_Position.y));
+                            var mt2 = cc.MoveTo.create(0.1,cc.p(man_Position.x+10,man_Position.y));
+                            var seq2 = cc.Sequence.create(mt1,mt2);
+                            sp_man.runAction(cc.Repeat.create(seq2,6));
+                        },this),cc.DelayTime.create(0.1*2*6+0.5),cc.CallFunc.create(function(){
+                            target.parent.def_State();
+                        },this));
+                        sp_man.runAction(seq);
+
+                    };
 
 
                 }
 
-
-                cc.log("sprite onTouchesEnded.. ");
-                event.getCurrentTarget().setOpacity(255);
             }
         });
 
-        cc.eventManager.addListener(listener, bird);
-        cc.eventManager.addListener(listener.clone(), bird2);
-        cc.eventManager.addListener(listener.clone(), baby);
-        cc.eventManager.addListener(listener.clone(), spider);
-        cc.eventManager.addListener(listener.clone(), eye1);
-        cc.eventManager.addListener(listener.clone(), eye2);
-        cc.eventManager.addListener(listener.clone(), eye3);
-        cc.eventManager.addListener(listener.clone(), headl3);
-        cc.eventManager.addListener(listener.clone(), headr2);
-        cc.log("fp01");
+        cc.eventManager.addListener(listener1, sp_Clock);
+        cc.eventManager.addListener(listener1.clone(), sp_bucket);
+        cc.eventManager.addListener(listener1.clone(), sp_hammer);
+        cc.eventManager.addListener(listener1.clone(), sp_tv);
+        cc.eventManager.addListener(listener1.clone(), z1);
+        cc.eventManager.addListener(listener1.clone(), z2);
+        cc.eventManager.addListener(listener1.clone(), z3);
+        cc.eventManager.addListener(listener1.clone(), sp_man);
+
     },
-    moveBird:function(sebder)
-    {
-        bird.setPosition(bird.getPositionX()-1,bird.getPositionY());
-        if(bird.getPositionX()>=winSize.width*0.45)
-        {
-            bird.setPosition(bird.getPositionX()-1,bird.getPositionY()-2);
+
+    //显示界面
+    def_State : function (){
+
+
+        if (pre_Tag == 1){
+            sp_man.setPosition(man_Position);
+            isMoving = false;
+            sp_Clock2.setOpacity(0);
+            sp_Clock.setOpacity(255);
+            var seq = cc.Sequence.create(cc.DelayTime.create(1),cc.CallFunc.create(function(){
+
+                ShowFailedPanel(this.getParent(),12,3);
+            },this));
+            this.runAction(seq);
+        }else if(pre_Tag == 2){
+            sp_man.setPosition(man_Position);
+            isMoving = false;
+//            sp_bucket.setOpacity(255);
+//            water1.removeFromParent();
+//            water2.removeFromParent();
+            var seq = cc.Sequence.create(cc.DelayTime.create(1),cc.CallFunc.create(function(){
+
+                ShowFailedPanel(this.getParent(),12,2);
+            },this));
+            this.runAction(seq);
         }
-        else if(bird.getPositionX()>=winSize.width*0.18)
-        {
-            bird.setPosition(bird.getPositionX()-1,bird.getPositionY()+1);
-        }
-        else
-        {
-            bird.setPosition(winSize.width*0.6,winSize.height);
-        }
+        else if(pre_Tag == 3){
+            sp_man.setPosition(man_Position);
+            isMoving = false;
+//            sp_hammer.setOpacity(255);
+            sp_hammer2.setOpacity(0);
+            var seq = cc.Sequence.create(cc.DelayTime.create(1),cc.CallFunc.create(function(){
 
-//        cc.log("agcd");
-    },
-    moveBird2:function(sebder)
-    {
-        if(bird2.getPositionX()>0)
-        {
-            bird2.setPosition(bird2.getPositionX()-2,bird.getPositionY()-1);
-        }
-        else
-        {
-            var x=winSize.width*0.25+cc.random0To1(winSize.width*2.35-winSize.width*1.25);
-            bird2.setPosition(x,winSize.height);
-        }
+                ShowFaildPPanel(this.getParent(),12,0);
+            },this));
+            this.runAction(seq);
+        }else if(pre_Tag == 4){
 
-//        cc.log("agcd");
-    },
-    faleCall:function()
-    {
-        ShowFaildPPanel(man.getParent().getParent(),1);
-    },
-    winCall:function()//过关调用方法
-    {
-        //跳出一个房子，再过关
+            isMoving = false;
+            var seq = cc.Sequence.create(cc.DelayTime.create(1),cc.CallFunc.create(function(){
+                //显示失败的界面
+                ShowFailedPanel(this.getParent(),12,1);
 
-
-
-
-//        this.stopActionByTag(11);
-//        this.stopActionByTag(12);
-//        this.stopActionByTag(13);
-
-        cc.log(ist);
-        if(ist)
-        {
-            this.getParent().getChildByTag(2).getChildByTag(199).removeFromParent();
-        }
-        else
-        {
-            cc.eventManager.removeAllListeners();
-
-            this.getParent().getChildByTag(2).removeFromParent(true);
-        }
-
-
-
-
-
-        if(ist)return;
-        if(isw)return;
-        this.stopAllActions();
-
-
-        isw=true;
-        if(!this.isfailse) {
-            stopAllEffect();
-//            this.unschedule(this.step);
-            //bg
-            var bg2=cc.Sprite.create("#k_01_bg.png");
-            bg2.setPosition(winSize.width/2,winSize.height/2);
-            this.addChild(bg2,9);
-            house=cc.Sprite.create("#k_01_bg_house_win.png");
-//            house.setTag(4);
-            house.setPosition(winSize.width*0.4,winSize.height*0.5);
-            this.addChild(house,10);
-
-            var moon = new cc.Sprite("#k_19_moon.png");
-            moon.attr({
-                x:winSize.width- 270,
-                y:winSize.height/2 + 220,
-                anchorX:0.5,
-                anchorY:0.5
-            });
-            this.addChild(moon,10);
-
-            //添加云
-            var cloud=new cc.Sprite("#com_cloud.png");
-            cloud.attr({
-                x:winSize.width/2-250,
-                y:550
-            });
-            cloud.runAction(cc.sequence(cc.moveTo(80,cc.p(-cloud.getBoundingBox().width/2,550)),cc.place(cc.p(winSize.width+cloud.getBoundingBox().width/2,550))).repeatForever());
-            this.addChild(cloud,10);
-
-            people=new cc.Sprite("#k_01_man_gun.png");
-//            people.setAnchorPoint(1,0.5);
-            people.setTag(99);
-            people.setPosition(winSize.width+people.width/2,house.getPositionY()-house.height*0.35);
-            this.addChild(people,10);
-
-
-            var mama=new cc.Sprite("#k_01_comeback.png");
-            mama.setPosition(winSize.width,house.getPositionY());
-            this.addChild(mama,10);
-            var mo=new cc.MoveBy(0.5,cc.p(-80,-45));
-            var mo2=new cc.MoveBy(0.5,cc.p(-80,45));
-            var ss=new cc.Sequence(mo,mo2);
-            mama.runAction(new cc.Sequence(new cc.DelayTime(0.5),ss,ss.clone(),ss.clone(),new cc.FadeOut(0.2)));
-            this.runAction(new cc.Sequence(new cc.DelayTime(0.3),new cc.CallFunc(function(){playEffect(res.F01_WIN);})));
-
-
-            hou=new cc.Sprite("#k_01_bg_house_win2.png");
-            hou.setPosition(winSize.width*0.4,winSize.height*0.5);
-            this.addChild(hou,12);
-
-            this.schedule(this.step2,0.5);
-            cc.log("win");
-        }
-    },
-    step2:function(dt)
-    {
-        if(people.getPositionX()>house.getPositionX())
-        {
-            var rotate=new cc.RotateBy(0.5,-180);
-            var move=new cc.MoveBy(0.5,cc.p(-77,0));
-
-            var seq1=new cc.Sequence(rotate,rotate.clone());
-            var seq2=new cc.Sequence(move,move.clone());
-            people.runAction(new cc.Spawn(seq1,seq2));
-
-            cc.log("win2222222222");
-
-        }
-        else
-        {
-            this.unschedule(this.step2);
-            this.runAction(new cc.Sequence(new cc.DelayTime(0.1),new cc.CallFunc(function(){
-                    playEffect(res.F01_LAUGHT);
-                people.setVisible(false);
-                hou.setVisible(false);
-            }),new cc.DelayTime(0.3),
-                new cc.CallFunc(function(){
-                    var se=new cc.Sequence(new cc.MoveBy(0.05,cc.p(13,15)),new cc.MoveBy(0.05,cc.p(-13,-15))
-                        ,new cc.MoveBy(0.05,cc.p(-24,-16)),new cc.MoveBy(0.05,cc.p(24,16)))
-                    house.runAction(new cc.Sequence(se,se.clone(),se.clone(),se.clone(),new cc.CallFunc(function(){
-                            ShowSuccessPanel(man2.getParent().getParent(),1);
-                    })
-                    ));
-                })
-//                ,new cc.DelayTime(1)
-//                ,new cc.CallFunc(function(){
-//                    ShowSuccessPanel(people.getParent().getParent(),1);
-//                })
-            ));
-
-            cc.log("win22233333");
-
-        }
-
+            },this));
+            this.runAction(seq);
+        };
 
     }
-//    ,sound1:function()
-//    {
-//        playEffect(res.F01_GRIG_SOUNDS);
-//
-//    }
-//    ,sound2:function()
-//    {
-//        playEffect(res.F01_2_SOUNDS);
-//        playEffect(res.F01_2_CRY);
-//        playEffect(res.F01_GRIG_SOUNDS);
-//
-//    }
 
 
 });
-var HomeScene=cc.Scene.extend({
-    layer:null,
+
+var AwakeScene = cc.Scene.extend({
+
     onEnter : function() {
         this._super();
-        layer =new HomeLayer();
-        layer.setTag(1);
+        var layer = new AwakeLayer();
         this.addChild(layer);
 
-        var level = 1;
-        var mainUILayer = new MainUILayer(level);
-        mainUILayer.setTag(2);
-        this.addChild(mainUILayer, 2);
 
-//                              alert(_arr);
+        var level = 12;
+        var mainUILayer = new MainUILayer(level);
+        this.addChild(mainUILayer, 12);
     },
     pauseTheGame : function () {
         //pause the game
-//        layer.unschedule(layer.step2);
-//        if()
-//        if(getMusicIsOpen()) {
-//            layer.unschedule(layer.sound2);
-//            layer.unschedule(layer.sound1);
-//        }
-
-                      pauseAllEffect();
 //        stopAllEffect();
-//        cc.director.sharedDirector.getActionManager().pauseTarget(layer.people);
-//        cc.Director.getActionManager().pauseTarget();
 
-
-//        layer.stopAllActions();
-//        layer.unschedule(layer.step);
         cc.log("pause the game");
     },
     resumeTheGame :function () {
         //resume the game
-//        layer.schedule(layer.step2);
-//        layer.schedule(layer.step);
-//        if(getMusicIsOpen())
-//        {
-//            layer.schedule(layer.sound2);
-//            layer.schedule(layer.sound1);
-//        }
-
-//        cc.director.sharedDirector.getActionManager().resumeTarget(layer.people);
-
         cc.log("resume the game");
     }
+
 });
-
-

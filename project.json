@@ -4,15 +4,28 @@
     "debugMode" : 1,
     "showFPS" : true,
     "frameRate" : 60,
-    "noCache" : false,
     "id" : "gameCanvas",
     "renderMode" : 0,
     "engineDir":"frameworks/cocos2d-html5",
 
-    "modules" : ["cocos2d", "cocostudio"],
+    "modules" : ["cocos2d","ccui","extensions"],
 
     "jsList" : [
         "src/resource.js",
-        "src/app.js"
+        "src/mainScene.js",
+        "src/loadingScene.js",
+        "src/passionScene.js",
+        "src/utils.js",
+        "src/fp01Home.js",
+        "src/fp02Fly.js",
+        "src/mainUILayer.js",
+        "src/database.js",
+        "src/panelClass.js",
+        "src/audioUtil.js",
+        "src/DBTimer.js",
+        "src/crossFireGame.js",
+        "src/existIncrack.js",
+        "src/selfADPanel.js"
+
     ]
 }
